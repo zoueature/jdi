@@ -20,5 +20,5 @@ config($application_config);
 try {
     $app->run();
 } catch (Exception $e) {
-    //TODO 打日志
+    \Core\Logger::error($e->getMessage());
 }
