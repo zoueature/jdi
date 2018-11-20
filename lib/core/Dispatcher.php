@@ -11,7 +11,10 @@ namespace Core;
 
 class Dispatcher
 {
-    private static $namespace;
+    private static $namespace = 'App\\Controller';
+    public static $route_namespace_map = [
+
+    ];
 
     /**
      * ------------------------------------------------------
@@ -19,7 +22,7 @@ class Dispatcher
      * @param $params
      * -------------------------------------------------------
      */
-    public static function patcher($handle, $params)
+    public static function patcher($handle, $params, $namespace = null)
     {
         if ($handle instanceof \Closure) {
             //handle is closure, do this function
@@ -30,12 +33,23 @@ class Dispatcher
         if (empty($arr)) {
             throw new \Exception('extra handle error, please use format "controller@action"', '404');
         }
-        $controller = $arr[0];
+        if (empty($namespace)) {
+            $namespace = self::$namespace;
+        }
+        $controller = $namespace.'\\'.$arr[0];
         $action = $arr[1];
         $controller = new $controller;
         call_user_func_array([$controller, $action], $params);
     }
+
+    public static function setNamespace()
+    {
+
+    }
 }
+
+
+
 
 
 

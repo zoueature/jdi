@@ -8,6 +8,4 @@
 
 use Core\Router;
 
-Router::get('/api', function () {
-    echo 'hello world';
-});
+Router::get('/api/{id}', 'TestController@index', 'App\\Http');

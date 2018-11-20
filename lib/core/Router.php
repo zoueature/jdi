@@ -20,6 +20,7 @@ class Router
 {
     private static $route;
     private static $dispatcher;
+    private static $namesapce = [];
 
     public static function init()
     {
@@ -52,7 +53,8 @@ class Router
                 $vars = $route_info[2];
                 //根据匹配到的路由，解析到相应的控制器
                 try {
-                    CPatcher::patcher($handler, $vars);
+                    $namespace = isset(self::$namesapce[$uri]) ? self::$namesapce[$uri]: '';
+                    CPatcher::patcher($handler, $vars, $namespace);
                 } catch (\Exception $e) {
                     echo "Error";
                 }
@@ -60,15 +62,21 @@ class Router
         }
     }
 
-    public static function get($uri, $handle)
+    public static function get($uri, $handle, $namespace = '')
     {
         self::init();
+        if (!empty($namespace)) {
+            self::$namesapce[$uri] = $namespace;
+        }
         return self::$route->addRoute('GET', $uri, $handle);
     }
 
-    public static function post($uri, $handle)
+    public static function post($uri, $handle, $namespace)
     {
         self::init();
+        if (!empty($namespace)) {
+            self::$namesapce[$uri] = $namespace;
+        }
         return self::$route->addRoute('GET', $uri, $handle);
     }
 
