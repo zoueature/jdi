@@ -10,6 +10,7 @@ return [
     "domain" => 'www.eature.com',
     "db" => [
         'master' => [
+            'type' => 'MySQL',
             'host' => '127.0.0.1',
             'port' => 3306,
             'user' => '',
