@@ -80,11 +80,22 @@ class Router
         return self::$route->addRoute('GET', $uri, $handle);
     }
 
+    public static function group($prefix, Array $route = [])
+    {
+        self::init();
+        self::$route->addGroup($prefix, function (RouteCollector $r) use ($route){
+            foreach ($route as $key => $value) {
+                $r->addRoute('GET', $key, $value);
+            }
+        });
+    }
+
     public static function getData()
     {
         self::init();
         return self::$route->getData();
     }
+
 }
 
 
