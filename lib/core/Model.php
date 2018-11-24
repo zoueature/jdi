@@ -69,7 +69,13 @@ class Model
             //数组形式的参数
             $where = '';
             foreach ($conf as $column => $value) {
-                 $where .= "`$column` = $value, ";
+                if (!is_array($value)) {
+                    $where .= "`$column` = $value, ";
+                    continue;
+                }
+                foreach ($value as $operation => $item) {
+                    $where .= "`$column` $operation '$item', ";
+                }
             }
             $where = rtrim($where, ',');
         } else if (is_string($conf)) {
@@ -82,14 +88,51 @@ class Model
         return $this;
     }
 
-    /**
-     * ------------------------------------------------------
-     *
-     * -------------------------------------------------------
-     */
-    public function get($primary)
+    public function find()
+    {
+        $rows = $this->select();
+        if (empty($rows)) {
+            return [];
+        }
+        return $rows[1];
+    }
+
+    public function execSql()
     {
 
+    }
+
+    public function select()
+    {
+        $select_sql = "SELECT ";
+    }
+
+    public function insert(Array $insert_data)
+    {
+        $insert_sql = 'INSERT INTO '.$this->table;
+        $column = '';
+        foreach ($insert_data as $column => $value) {
+            $column .= "`$column`, ";
+            $value .= "'$value', ";
+        }
+        $column = rtrim($column, ',');
+        $value = rtrim($value, ',');
+        $insert_sql .= "($column) VALUES ($value)";
+        $this->last_sql = $insert_sql;
+    }
+
+    public function update(Array $update_data)
+    {
+
+    }
+    /**
+     * ------------------------------------------------------
+     *  根据主键获取对应的行数据
+     * -------------------------------------------------------
+     */
+    public function get($primary_value)
+    {
+        $this->instance->where([$this->primary => $primary_value])->find();
     }
 
 }
