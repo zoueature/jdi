@@ -18,57 +18,95 @@ class Model
     protected $primary = 'id';
 
     /** @var string 表名 */
-    protected $table = '';
+    protected $table;
 
     /** @var array 可以更新的字段 */
-    protected $update = [];
+    protected $update;
 
-    /** @var string 左后一次操作的sql */
-    protected $last_sql = '';
+    /** @var string 最后一次操作的sql */
+    protected $last_sql;
 
     /** @var string 最后一次查询的条件 */
-    private $where = '';
+    private $where;
 
-    public function __construct()
+    private $query_fileds = '*';
+
+    private $value_map;
+
+    private $fetch_type = \PDO::FETCH_COLUMN;
+
+    public function __construct(string $table = '')
     {
+        if (empty($table)) {
+            $this->table = ''; //类名
+        } else {
+            $this->table = $table;
+        }
         if (!($this->instance instanceof \PDO)) {
             try {
                 $this->instance = $this->connect();
             } catch (\Exception $e) {
-
+                var_dump($e->getMessage());
+                Logger::error($e->getMessage());
             }
         }
     }
 
-    protected function connect(Array $option = [])
+    public function setFetchType(int $type) :void
+    {
+        $this->fetch_type = $type;
+    }
+
+    /**
+     * -------------------------------------------------------
+     *  链接数据库
+     * -------------------------------------------------------
+     */
+    protected function connect(array $option = []) :\PDO
     {
         if (empty($this->config)) {
             $config = config('db');
-            if (empty($config)) {
-                throw new JdiException('connect DB fail no config');
-            }
-            $this->config = $config['master'];
+            $this->config = $config;
         }
         $config = $this->config['master'];
         switch (strtolower($this->config['type'])) {
             default: //默认是mysql
-                $dsn = "mysql:host={$config['host']};dbname={$config['dbname']}";
+                $dsn = "mysql:host={$config['host']};dbname={$config['name']}";
                 $pdo = new \PDO($dsn, $config['user'], $config['pswd'], $option);
         }
         return $pdo;
     }
 
     /**
-     * ------------------------------------------------------
-     * where条件
+     * -------------------------------------------------------
+     *  执行一条查询语句
      * -------------------------------------------------------
      */
-    public function where($conf)
+    public function query($sql) :array
     {
-        if (is_array($conf)) {
+        $pdo_statement = $this->instance->query($sql);
+        if (empty($pdo_statement)) {
+            return [];
+        }
+        $all_result = $pdo_statement->fetchAll();
+        return $all_result;
+    }
+
+    public function field($fields) :Model
+    {
+
+    }
+    /**
+     * ------------------------------------------------------
+     * 添加where条件
+     * -------------------------------------------------------
+     */
+    public function where($condition) :Model
+    {
+        if (is_array($condition)) {
             //数组形式的参数
             $where = '';
-            foreach ($conf as $column => $value) {
+            foreach ($condition as $column => $value) {
                 if (!is_array($value)) {
                     $where .= "`$column` = $value, ";
                     continue;
@@ -77,12 +115,11 @@ class Model
                     $where .= "`$column` $operation '$item', ";
                 }
             }
-            $where = rtrim($where, ',');
-        } else if (is_string($conf)) {
-            $where = $conf;
+            $where = rtrim($where, ', ');
+        } else if (is_string($condition)) {
+            $where = $condition;
         } else {
-            $param_type = gettype($conf);
-            throw new JdiException('where function params expect array or string, '.$param_type.'given');
+            return $this;
         }
         $this->where = $where;
         return $this;
@@ -104,7 +141,15 @@ class Model
 
     public function select()
     {
-        $select_sql = "SELECT ";
+        $sql = 'SELECT '
+            .$this->query_fileds
+            .' from '
+            .$this->table;
+        if (!empty($this->where)) {
+            $sql .= ' ' .$this->where;
+        }
+        $this->last_sql = $sql;
+        return $this->query($this->last_sql);
     }
 
     public function insert(Array $insert_data)
