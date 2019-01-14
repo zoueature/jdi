@@ -29,7 +29,7 @@ class Model
     /** @var string 最后一次查询的条件 */
     private $where;
 
-    private $query_fileds = '*';
+    private $query_fields = '*';
 
     private $value_map;
 
@@ -79,6 +79,15 @@ class Model
 
     /**
      * -------------------------------------------------------
+     *  清除单次查询的条件等相关数据
+     * -------------------------------------------------------
+     */
+    private function unsetCondition()
+    {
+
+    }
+    /**
+     * -------------------------------------------------------
      *  执行一条查询语句
      * -------------------------------------------------------
      */
@@ -89,12 +98,30 @@ class Model
             return [];
         }
         $all_result = $pdo_statement->fetchAll();
+        $this->unsetCondition();
         return $all_result;
     }
 
+    /**
+     * -------------------------------------------------------
+     *  设置需要查询的属性
+     * -------------------------------------------------------
+     */
     public function field($fields) :Model
     {
-
+        $str = '';
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $str .= "`$field`, ";
+            }
+            $str = rtrim($str, ', ');
+        } else if (is_string($fields)){
+            $str = $fields;
+        } else {
+            return $this;
+        }
+        $this->query_fields = $str;
+        return $this;
     }
     /**
      * ------------------------------------------------------
@@ -134,15 +161,21 @@ class Model
         return $rows[1];
     }
 
-    public function execSql()
+    /**
+     * -------------------------------------------------------
+     *  执行一条操作语句,返回受影响的函数
+     * -------------------------------------------------------
+     */
+    public function execSql($sql)
     {
-
+        $effect_row = $this->instance->exec($sql);
+        return $effect_row;
     }
 
     public function select()
     {
         $sql = 'SELECT '
-            .$this->query_fileds
+            .$this->query_fields
             .' from '
             .$this->table;
         if (!empty($this->where)) {
@@ -152,21 +185,23 @@ class Model
         return $this->query($this->last_sql);
     }
 
-    public function insert(Array $insert_data)
+    public function insert(array $insert_data)
     {
         $insert_sql = 'INSERT INTO '.$this->table;
-        $column = '';
+        $column_str = '';
+        $value_str = '';
         foreach ($insert_data as $column => $value) {
-            $column .= "`$column`, ";
-            $value .= "'$value', ";
+            $column_str .= "`$column`, ";
+            $value_str .= "'$value', ";
         }
-        $column = rtrim($column, ',');
-        $value = rtrim($value, ',');
+        $column = rtrim($column_str, ', ');
+        $value = rtrim($value_str, ', ');
         $insert_sql .= "($column) VALUES ($value)";
         $this->last_sql = $insert_sql;
+        $this->execSql($this->last_sql);
     }
 
-    public function update(Array $update_data)
+    public function update(array $update_data)
     {
 
     }
