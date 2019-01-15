@@ -33,9 +33,7 @@ class App
         $container = new Container();
         self::$container = $container;
         //TODO 绑定类
-        Register::bindClass([
-
-        ]);
+        //Register::bindClass([]);
     }
 
 

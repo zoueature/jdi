@@ -69,7 +69,7 @@ class Model
             $this->config = $config;
         }
         $config = $this->config['master'];
-        switch (strtolower($this->config['type'])) {
+        switch (strtolower($config['type'])) {
             default: //默认是mysql
                 $dsn = "mysql:host={$config['host']};dbname={$config['name']}";
                 $pdo = new \PDO($dsn, $config['user'], $config['pswd'], $option);

@@ -33,8 +33,33 @@ class Dispatcher
         }
         $controller = $namespace.'\\'.$arr[0];
         $action = $arr[1];
-        $controller = new $controller;
-        call_user_func_array([$controller, $action], $params);
+        self::deal($controller, $action, $params);
+    }
+
+    public static function deal($controller, $action, $params)
+    {
+        $controller_relection = new \ReflectionClass($controller);
+        $controller_instance = new $controller;
+        $method_reflection = $controller_relection->getMethod($action);
+        $dependence = $method_reflection->getParameters();
+        if (empty($dependence)) {
+            $method_reflection->invokeArgs($controller_instance, []);
+        } else {
+            foreach ($dependence as $param) {
+                //获取参数名的类型指定
+                $class = $param->getClass()->getName();
+                if (!empty($class)) {
+                    if (!class_exists($class)) {
+                        throw new JdiException("Can not found class :$class");
+                    }
+                    $param_instance = new $class;
+                    $solved[] = $param_instance;
+                } else {
+                    //非对象参数
+
+                }
+            }
+        }
     }
 
     public static function setNamespace()
