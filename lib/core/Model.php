@@ -84,7 +84,8 @@ class Model
      */
     private function unsetCondition()
     {
-
+        $this->where = null;
+        $this->query_fields = null;
     }
     /**
      * -------------------------------------------------------

@@ -9,7 +9,17 @@
 namespace Core;
 
 
-class Memcache
-{
+use Lib\Abs\NoSql;
 
+class Memcache implements NoSql
+{
+    public function set()
+    {
+        // TODO: Implement set() method.
+    }
+
+    public function get()
+    {
+        // TODO: Implement get() method.
+    }
 }

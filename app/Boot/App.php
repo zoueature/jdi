@@ -8,11 +8,14 @@
 
 namespace App\Boot;
 
+use Core\Container;
 use Core\Router;
 
 class App
 {
     private static $config;
+
+    private static $container;
 
     public function __construct(Array $config)
     {
@@ -21,15 +24,21 @@ class App
 
     public function run()
     {
+        $this->init();
         Router::parse();
     }
 
-    /**
-     * ------------------------------------------------------
-     * 获取配置项的值
-     * @param String $key
-     * -------------------------------------------------------
-     */
+    private function init()
+    {
+        $container = new Container();
+        self::$container = $container;
+        //TODO 绑定类
+        Register::bindClass([
+
+        ]);
+    }
+
+
     public static function getConfig(String $key)
     {
         if (isset(self::$config[$key])) {
@@ -38,13 +47,7 @@ class App
         return NULL;
     }
 
-    /**
-     * ------------------------------------------------------
-     * 设置值
-     * @param String $key
-     * @param $value
-     * -------------------------------------------------------
-     */
+
     public static function setConfig($key, $value)
     {
         if (is_array($key) && empty($value)) {

@@ -42,9 +42,11 @@ class Router
         $route_info = self::$dispatcher->dispatch($http_method, $uri);
         switch ($route_info[0]) {
             case Dispatcher::NOT_FOUND:
+                header('HTTP/1.1 404 Not Found');
                 echo "Not Found";
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
+                header('HTTP/1.1 304 Refuse');
                 $allowedMethods = $route_info[1];
                 echo "Request method not allow";
                 break;

@@ -16,12 +16,7 @@ class Dispatcher
 
     ];
 
-    /**
-     * ------------------------------------------------------
-     * @param $handle
-     * @param $params
-     * -------------------------------------------------------
-     */
+
     public static function patcher($handle, $params, $namespace = null)
     {
         if ($handle instanceof \Closure) {

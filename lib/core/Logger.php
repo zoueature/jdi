@@ -47,7 +47,7 @@ class Logger
         self::getModel('waring')->warning($msg, $context);
     }
 
-    public static function info(String $msg, $contenxt = [])
+    public static function info(string $msg, $contenxt = [])
     {
         self::getModel('info')->info($msg, $contenxt);
     }

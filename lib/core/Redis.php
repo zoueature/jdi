@@ -9,7 +9,17 @@
 namespace Core;
 
 
-class Redis
-{
+use Lib\Abs\NoSql;
 
+class Redis implements NoSql
+{
+    public function get()
+    {
+        // TODO: Implement get() method.
+    }
+
+    public function set()
+    {
+        // TODO: Implement set() method.
+    }
 }
