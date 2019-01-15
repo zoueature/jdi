@@ -9,7 +9,10 @@
 namespace App\Controller;
 
 
+use Core\Cache;
+use Core\Container;
 use Core\Model;
+use Core\Redis;
 
 class TestController
 {
@@ -21,7 +24,11 @@ class TestController
     {
         $model = new Model('t_ticket_order');
         $res = $model->select();
-        var_dump($res);
+        $container = new Container();
+        $container->bind(Redis::class, Redis::class);
+        $container->bind(Cache::class, Cache::class);
+        $cache = $container->make(Cache::class);
+        var_dump($cache);
     }
 }
 

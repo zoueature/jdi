@@ -11,26 +11,35 @@
 namespace App\Boot;
 
 
+use Core\Cache;
+use Core\Container;
+use Core\Dispatcher;
+use Core\Memcache;
+use Core\Redis;
+use Core\Router;
+
 class Register
 {
-    private static $single = true;
+    private $container = null;
 
-    /* -----------------------------------------
-     * 绑定相关类到容器中
-     * -----------------------------------------
-     */
-    public static function bindClass($classes, $method)
+    public function __construct(Container $container)
     {
-        if (is_array($classes)) {
-            //
-        } else if (is_string($classes)) {
-
-        }
+        $this->container = $container;
     }
 
-    public static function setDefaultSingle(bool $single)
+    /* -----------------------------------------
+     * 绑定框架核心类到容器中
+     * -----------------------------------------
+     */
+    public function registerCoreService()
     {
-        self::$single = $single;
+        $this->container->bindWithArray([
+            Cache::class => Cache::class,
+            Dispatcher::class => Dispatcher::class,
+            Memcache::class => Memcache::class,
+            Redis::class => Redis::class,
+            Router::class => Router::class
+        ]);
     }
 
 }

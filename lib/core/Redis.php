@@ -9,7 +9,7 @@
 namespace Core;
 
 
-use Lib\Abs\NoSql;
+use Abs\NoSql;
 
 class Redis implements NoSql
 {

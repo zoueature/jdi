@@ -9,6 +9,8 @@
 namespace Core;
 
 
+use Abs\NoSql;
+
 class Cache
 {
 	const CACHE_LIST = [
@@ -19,12 +21,9 @@ class Cache
 	private static $cache_model;
 	private static $cache;
 
-	private function __construct(Nosql $chche)
+	public function __construct(Redis $chche)
 	{
-		if (!in_array($cache, self::CACHE_LIST)) {
-			throw new JdiException('cache not permission, please use Memcache or Redis');
-		}
-		slef::$cache_model = $cache;	
+		self::$cache = $chche;
 	}
 
 	private static function getModel()

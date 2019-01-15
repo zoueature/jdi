@@ -31,9 +31,8 @@ class App
     private function init()
     {
         $container = new Container();
-        self::$container = $container;
-        //TODO 绑定类
-        //Register::bindClass([]);
+        $register = new Register($container);
+        $register->registerCoreService();
     }
 
 

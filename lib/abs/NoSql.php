@@ -6,7 +6,7 @@
  * Time: 9:27
  */
 
-namespace Lib\Abs;
+namespace Abs;
 
 interface NoSql
 {

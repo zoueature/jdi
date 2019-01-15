@@ -4,6 +4,7 @@
  * User: eature
  * Date: 18-12-22
  * Time: 上午9:46
+ * 服务容器
  */
 
 namespace Core;
@@ -14,6 +15,8 @@ class Container
     /** @var array 实例生成的方式 */
     private $bind = [];
 
+    private $single = [];
+
     private $instance = [];
 
     /**
@@ -21,13 +24,41 @@ class Container
      *  绑定类实例的生成方法
      * -------------------------------------------------------
      */
-    public function bind($class_name, $instance_method, $single = false)
+    public function bind($class_name, $instance_method, $single = true)
     {
         if (isset($this->bind[$class_name])) {
             return true;
         }
-        $this->bind[$class_name]['method'] = $instance_method;
-        $this->bind[$class_name]['single'] = $single;
+        $this->bind[$class_name] = $instance_method;
+        $this->single[$class_name] = $single;
+        return true;
+    }
+
+    /**
+     * -------------------------------------------------------
+     *  数组批量绑定
+     * -------------------------------------------------------
+     */
+    public function bindWithArray(array $binds)
+    {
+        $this->bind = $binds;
+    }
+
+    /**
+     * -------------------------------------------------------
+     * 获取指定类的实例化对象
+     * -------------------------------------------------------
+     */
+    public function make($class)
+    {
+        if (!class_exists($class)) {
+            return null;
+        }
+        if (!in_array($class, array_keys($this->bind))) {
+            return null;
+        }
+        $instance = $this->instance($class);
+        return $instance;
     }
 
     /**
@@ -37,64 +68,81 @@ class Container
      */
     private function isBuildable($class)
     {
-
+        //TODO 可实例化，则构造函数没有参数
+        return true;
     }
 
-    private function getDependence($class)
+    private function getDependence(\ReflectionClass $reflection_class)
     {
-        try {
-            $reflection = new \ReflectionClass($class);
-        } catch (\Exception $e) {
-            Logger::error('get Dependence error');
-            return false;
-        }
-        $contruct = $reflection->getConstructor();
-        if (empty($contruct)) {
+        $construct = $reflection_class->getConstructor();
+        if (empty($construct)) {
             //没有构造函数, 返回空, 即不依赖于其他类
             return [];
         }
         //获取构造函数的参数名，即其依赖
-        $params = $contruct->getParameters();
-        return $params;
+        $params = $construct->getParameters();
+        if (empty($params)) {
+            return [];
+        }
+        $data = [];
+        foreach ($params as $param) {
+            $data[] = $param->getClass()->getName();
+        }
+        return $data;
     }
 
-    private function buildInstance($class)
-    {
-        if (isset($this->instance[$class])) {
-			//单实例，直接返回实例对象
-			return $this->instance[$class];
-		}
-		$dependences = $this->getDependence($class);
-		if (empty($denpences)) {
-			$instance = $this->instance($class);
-		} else {
-		}
-    }
-
-	private function solveDependence($dependences)
+	private function solveDependence($dependence)
 	{
-	
+	    $instances = [];
+	    foreach ($dependence as $item) {
+	        $instances[] = $this->make($item);
+        }
+	    return $instances;
 	}
 
+    /**
+     * -------------------------------------------------------
+     *  解决依赖并实例化对象
+     * -------------------------------------------------------
+     */
 	private function instance($class)
 	{
-		$method = $this->bind[$class]['method'];
-		$single = $this->bind[$class]['single'];
+		$method = $this->bind[$class]; //实例化对象的方法
+		$single = $this->single[$class] ?: true; //是否单实例
+        //单实例则返回已经实例化的对象
 		if ($single &&
 			isset($this->instance[$class]) &&
-			($this->instance[$class] instanceof $class)) {
+			$this->instance[$class] instanceof $class) {
 			return $this->instance[$class];
-			}
+		}
 		if (empty($method)) {
-			return false;
+			return null;
 		}
-		if ($method instanceof Closure) {
-			//闭包函数
+		//闭包实现则直接执行闭包
+		if ($method instanceof \Closure) {
+			$instance = $method();
+			return $instance;
 		}
-		$instance = new $method;
-		if ($single) {
-			$this->instance[$class] = $instance;
-		}
+		if (!is_string($method)) {
+		    return null;
+        }
+		try {
+            $reflection_class = new \ReflectionClass($method);
+        } catch (\Exception $e) {
+		    return null;
+        }
+		$dependence = $this->getDependence($reflection_class);
+		//没有依赖则直接实例化
+		if (empty($dependence)) {
+		    $instance = new $method;
+		    return $instance;
+        }
+		$params_instances = $this->solveDependence($dependence);
+		try {
+            $instance = $reflection_class->newInstanceArgs($params_instances);
+        } catch (\Exception $e) {
+		    return null;
+        }
 		return $instance;
 	}
 }
