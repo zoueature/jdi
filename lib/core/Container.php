@@ -108,7 +108,7 @@ class Container
 	private function instance($class)
 	{
 		$method = $this->bind[$class]; //实例化对象的方法
-		$single = $this->single[$class] ?: true; //是否单实例
+		$single = isset($this->single[$class]) ? $this->single[$class] : true; //是否单实例
         //单实例则返回已经实例化的对象
 		if ($single &&
 			isset($this->instance[$class]) &&

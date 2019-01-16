@@ -30,7 +30,7 @@ class Router
         }
     }
 
-    public static function parse()
+    public static function parse($container)
     {
         self::$dispatcher = new FastDispatcher(self::getData());
         $http_method = $_SERVER['REQUEST_METHOD']; //请求类型
@@ -56,7 +56,7 @@ class Router
                 //根据匹配到的路由，解析到相应的控制器
                 try {
                     $namespace = isset(self::$namesapce[$uri]) ? self::$namesapce[$uri]: '';
-                    CPatcher::patcher($handler, $vars, $namespace);
+                    CPatcher::patcher($handler, $vars, $namespace, $container);
                 } catch (\Exception $e) {
                     echo "Error";
                 }

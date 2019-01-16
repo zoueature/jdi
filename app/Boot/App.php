@@ -25,12 +25,13 @@ class App
     public function run()
     {
         $this->init();
-        Router::parse();
+        Router::parse(self::$container);
     }
 
     private function init()
     {
         $container = new Container();
+        self::$container = $container;
         $register = new Register($container);
         $register->registerCoreService();
     }

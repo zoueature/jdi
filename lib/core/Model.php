@@ -33,15 +33,22 @@ class Model
 
     private $value_map;
 
+    private $table_prefix = 't_';
+
     private $fetch_type = \PDO::FETCH_COLUMN;
 
-    public function __construct(string $table = '')
+    public function __construct(string $table = '', string $prefix = '')
     {
         if (empty($table)) {
             $this->table = ''; //类名
         } else {
             $this->table = $table;
         }
+        if (!empty($prefix)) {
+            $this->table_prefix = $prefix;
+        }
+        $this->table = $this->table_prefix.$this->table;
+
         if (!($this->instance instanceof \PDO)) {
             try {
                 $this->instance = $this->connect();
@@ -95,6 +102,11 @@ class Model
     public function query($sql) :array
     {
         $pdo_statement = $this->instance->query($sql);
+        if ($pdo_statement !== false) {
+            Logger::sql($sql);
+        } else {
+            Logger::sqlError($sql);
+        }
         if (empty($pdo_statement)) {
             return [];
         }

@@ -17,7 +17,7 @@ class Dispatcher
     ];
 
 
-    public static function patcher($handle, $params, $namespace = null)
+    public static function patcher($handle, $params, $namespace, $container)
     {
         if ($handle instanceof \Closure) {
             //handle is closure, do this function
@@ -33,32 +33,34 @@ class Dispatcher
         }
         $controller = $namespace.'\\'.$arr[0];
         $action = $arr[1];
-        self::deal($controller, $action, $params);
+        self::deal($controller, $action, $params, $container);
     }
 
-    public static function deal($controller, $action, $params)
+    public static function deal($controller, $action, $params, Container $container)
     {
         $controller_relection = new \ReflectionClass($controller);
-        $controller_instance = new $controller;
+        $container->bind($controller, $controller);
+        $controller_instance = $container->make($controller);
         $method_reflection = $controller_relection->getMethod($action);
         $dependence = $method_reflection->getParameters();
         if (empty($dependence)) {
-            $method_reflection->invokeArgs($controller_instance, []);
+            $method_reflection->invokeArgs($controller_instance, $params);
         } else {
+            $params_with_instance = [];
             foreach ($dependence as $param) {
                 //获取参数名的类型指定
-                $class = $param->getClass()->getName();
-                if (!empty($class)) {
-                    if (!class_exists($class)) {
-                        throw new JdiException("Can not found class :$class");
-                    }
-                    $param_instance = new $class;
-                    $solved[] = $param_instance;
-                } else {
-                    //非对象参数
-
+                if (empty($param->getClass())) {
+                    continue;
                 }
+                $class = $param->getClass()->getName();
+                if (!class_exists($class)) {
+                    throw new JdiException("Can not found class :$class");
+                }
+                $instance = $container->make($class);
+                $params_with_instance[] = $instance;
             }
+            $params_with_instance = array_merge($params_with_instance, $params);
+            $method_reflection->invokeArgs($controller_instance, $params_with_instance);
         }
     }
 

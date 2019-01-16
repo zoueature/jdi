@@ -16,6 +16,8 @@ class Logger
     private static $info_instance;
     private static $waring_instance;
     private static $error_instance;
+    private static $sql_instance;
+    private static $sql_error_instance;
 
     private function __construct()
     {
@@ -52,6 +54,14 @@ class Logger
         self::getModel('info')->info($msg, $contenxt);
     }
 
+    public static function sql(string $msg)
+    {
+        self::getModel('sql')->info($msg);
+    }
+    public static function sqlError(string $msg)
+    {
+        self::getModel('sql_error')->info($msg);
+    }
 }
 
 

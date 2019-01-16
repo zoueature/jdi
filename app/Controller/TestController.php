@@ -20,15 +20,17 @@ class TestController
     {
         echo $id;
     }
-    public function test()
+    public function test(Redis $redis, $o = 11)
     {
-        $model = new Model('t_ticket_order');
+        $model = new Model('user', 'jingyu');
         $res = $model->select();
+        var_dump($res);die;
         $container = new Container();
         $container->bind(Redis::class, Redis::class);
         $container->bind(Cache::class, Cache::class);
         $cache = $container->make(Cache::class);
         var_dump($cache);
+        var_dump($redis);
     }
 }
 
