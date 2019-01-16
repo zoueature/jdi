@@ -13,13 +13,43 @@ use Abs\NoSql;
 
 class Redis implements NoSql
 {
-    public function get()
+    private $not_null =['host', 'port', 'auth'];
+    private $redis;
+
+    public function __construct()
     {
-        // TODO: Implement get() method.
+        try {
+            $this->init();
+        } catch (JdiException $e) {
+            Logger::error($e->getMessage());
+        }
     }
 
-    public function set()
+    private function init()
     {
-        // TODO: Implement set() method.
+        $config = config('cache');
+        foreach ($this->not_null as $key) {
+            if (empty($config[$key])) {
+                throw new JdiException('Redis config error '. $key);
+            }
+        }
+        $this->redis = new \Redis();
+        $this->redis->connect($config['host'], $config['port']);
+        $this->redis->auth($config['auth']);
+    }
+
+    public function get(string $key)
+    {
+        return $this->redis->get($key);
+    }
+
+    public function set(string $key, string $value)
+    {
+        return $this->redis->set($key, $value);
+    }
+
+    public function __call($name, $arguments)
+    {
+        call_user_func_array([$this->redis, $name], $arguments);
     }
 }

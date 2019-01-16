@@ -10,7 +10,7 @@ namespace Abs;
 
 interface NoSql
 {
-    public function get();
+    public function get(string $key);
 
-    public function set();
+    public function set(string $key, string $value);
 }

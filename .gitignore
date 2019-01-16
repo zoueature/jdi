@@ -2,4 +2,4 @@ vendor
 .idea
 composer.lock
 logs
-/config/*
+config/env.php

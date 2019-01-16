@@ -21,9 +21,9 @@ class Cache
 	private static $cache_model;
 	private static $cache;
 
-	public function __construct(Redis $chche)
+	public function __construct(Redis $cache)
 	{
-		self::$cache = $chche;
+		self::$cache = $cache;
 	}
 
 	private static function getModel()
