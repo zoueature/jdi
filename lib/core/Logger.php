@@ -18,6 +18,8 @@ class Logger
     private static $error_instance;
     private static $sql_instance;
     private static $sql_error_instance;
+    private static $access_instance;
+    private static $response_instance;
 
     private function __construct()
     {
@@ -61,6 +63,14 @@ class Logger
     public static function sqlError(string $msg)
     {
         self::getModel('sql_error')->info($msg);
+    }
+    public static function access(string $msg)
+    {
+        self::getModel('access')->info($msg);
+    }
+    public static function response(string $msg)
+    {
+        self::getModel('response')->info($msg);
     }
 }
 
