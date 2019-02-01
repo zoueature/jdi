@@ -19,7 +19,6 @@ class Controller
     {
         $msg = 'request data is :';
         Logger::info($msg, $_REQUEST);
-        Logger::error('logger_error test ');
     }
 
     public function jsonReturn(int $errno, string $msg, array $data)

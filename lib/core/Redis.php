@@ -28,6 +28,7 @@ class Redis implements NoSql
     private function init()
     {
         $config = config('cache');
+        $config = $config['redis'];
         foreach ($this->not_null as $key) {
             if (empty($config[$key])) {
                 throw new JdiException('Redis config error '. $key);
@@ -50,6 +51,6 @@ class Redis implements NoSql
 
     public function __call($name, $arguments)
     {
-        call_user_func_array([$this->redis, $name], $arguments);
+        return call_user_func_array([$this->redis, $name], $arguments);
     }
 }

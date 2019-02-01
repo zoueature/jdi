@@ -11,8 +11,8 @@ namespace Core;
 
 class Model
 {
-    private $instance;
-    private $config = [];
+    protected $instance;
+    protected $config = [];
 
     /** @var string 主键名 */
     protected $primary = 'id';
@@ -27,15 +27,19 @@ class Model
     protected $last_sql;
 
     /** @var string 最后一次查询的条件 */
-    private $where;
+    protected $where;
 
-    private $query_fields = '*';
+    protected $query_fields = '*';
 
-    private $value_map;
+    protected $value_map;
 
-    private $table_prefix = 't_';
+    protected $table_prefix = 't_';
 
-    private $fetch_type = \PDO::FETCH_COLUMN;
+    protected $fetch_type = \PDO::FETCH_COLUMN;
+
+    protected $offset;
+
+    protected $limit;
 
     public function __construct(string $table = '', string $prefix = '')
     {
@@ -81,6 +85,7 @@ class Model
                 $dsn = "mysql:host={$config['host']};dbname={$config['name']}";
                 $pdo = new \PDO($dsn, $config['user'], $config['pswd'], $option);
         }
+        $pdo->exec('set names '.$config['charset']);
         return $pdo;
     }
 
@@ -148,14 +153,14 @@ class Model
             $where = '';
             foreach ($condition as $column => $value) {
                 if (!is_array($value)) {
-                    $where .= "`$column` = $value, ";
+                    $where .= "`$column` = '$value' AND ";
                     continue;
                 }
                 foreach ($value as $operation => $item) {
-                    $where .= "`$column` $operation '$item', ";
+                    $where .= "`$column` $operation '$item'AND ";
                 }
             }
-            $where = rtrim($where, ', ');
+            $where = rtrim($where, 'AND ');
         } else if (is_string($condition)) {
             $where = $condition;
         } else {
@@ -167,11 +172,12 @@ class Model
 
     public function find()
     {
+        $this->limit(1);
         $rows = $this->select();
         if (empty($rows)) {
             return [];
         }
-        return $rows[1];
+        return $rows[0];
     }
 
     /**
@@ -192,7 +198,13 @@ class Model
             .' from '
             .$this->table;
         if (!empty($this->where)) {
-            $sql .= ' ' .$this->where;
+            $sql .= ' WHERE ' .$this->where;
+        }
+        if ($this->offset !== null) {
+            $sql .= ' OFFSET '.$this->offset;
+        }
+        if ($this->limit !== null) {
+            $sql .= ' LIMIT '.$this->limit;
         }
         $this->last_sql = $sql;
         return $this->query($this->last_sql);
@@ -211,15 +223,15 @@ class Model
         $value = rtrim($value_str, ', ');
         $insert_sql .= "($column) VALUES ($value)";
         $this->last_sql = $insert_sql;
-        $this->execSql($this->last_sql);
+        return $this->execSql($this->last_sql);
     }
 
     public function update(array $update_data)
     {
 
     }
-    /**
-     * ------------------------------------------------------
+
+    /* ------------------------------------------------------
      *  根据主键获取对应的行数据
      * -------------------------------------------------------
      */
@@ -228,6 +240,20 @@ class Model
         $this->instance->where([$this->primary => $primary_value])->find();
     }
 
+    /* -----------------------------------------
+     * 设置limit属性
+     * -----------------------------------------
+     */
+    public function limit($offset, $limit = false)
+    {
+        if ($limit === false) {
+            $this->limit = $offset;
+            return $this;
+        }
+        $this->offset = $offset;
+        $this->limit = $limit;
+        return $this;
+    }
 }
 
 
