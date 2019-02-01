@@ -8,7 +8,9 @@
         "psr-4": {
             "App\\": "app/",
             "Core\\": "lib/core/",
-            "Abs\\": "lib/abs/"
+            "Abs\\": "lib/abs/",
+            "Net\\": "lib/net",
+            "Utils\\": "lib/utils"
         },
         "files": [
             "route/api.php",
