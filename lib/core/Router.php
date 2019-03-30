@@ -43,10 +43,12 @@ class Router
         switch ($route_info[0]) {
             case Dispatcher::NOT_FOUND:
                 header('HTTP/1.1 404 Not Found');
+                header("status: 404 Not Found");
                 echo "Not Found";
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
                 header('HTTP/1.1 304 Refuse');
+                header("status: 304 Refuse");
                 $allowedMethods = $route_info[1];
                 echo "Request method not allow";
                 break;
@@ -58,7 +60,7 @@ class Router
                     $namespace = isset(self::$namesapce[$uri]) ? self::$namesapce[$uri]: '';
                     CPatcher::patcher($handler, $vars, $namespace, $container);
                 } catch (\Exception $e) {
-                    echo "Error";
+                    echo $e->getMessage();
                 }
                 break;
         }

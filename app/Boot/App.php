@@ -17,9 +17,12 @@ class App
 
     private static $container;
 
+    public static $root;
+
     public function __construct(Array $config)
     {
         self::$config = $config;
+        self::$root = dirname(dirname(dirname(__FILE__)));
     }
 
     public function run()
@@ -32,8 +35,9 @@ class App
     {
         $container = new Container();
         self::$container = $container;
-        $register = new Register($container);
+        $register = new ServiceRegister($container);
         $register->registerCoreService();
+        $register->registerUserService();
     }
 
 
@@ -56,6 +60,10 @@ class App
         return true;
     }
 
+    public static function getContainer()
+    {
+        return self::$container;
+    }
 
 }
 

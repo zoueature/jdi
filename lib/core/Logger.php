@@ -43,33 +43,54 @@ class Logger
 
     public static function error(String $msg, $context = [])
     {
+        if (!config('log')['switch']) {
+            return true;
+        }
         self::getModel('error')->error($msg, $context);
     }
 
     public static function waring(String $msg, $context = [])
     {
+        if (!config('log')['switch']) {
+            return true;
+        }
         self::getModel('waring')->warning($msg, $context);
     }
 
     public static function info(string $msg, $contenxt = [])
     {
+        if (!config('log')['switch']) {
+            return true;
+        }
         self::getModel('info')->info($msg, $contenxt);
     }
 
     public static function sql(string $msg)
     {
+        if (!config('log')['switch']) {
+            return true;
+        }
         self::getModel('sql')->info($msg);
     }
     public static function sqlError(string $msg)
     {
+        if (!config('log')['switch']) {
+            return true;
+        }
         self::getModel('sql_error')->info($msg);
     }
     public static function access(string $msg)
     {
+        if (!config('log')['switch']) {
+            return true;
+        }
         self::getModel('access')->info($msg);
     }
     public static function response(string $msg)
     {
+        if (!config('log')['switch']) {
+            return true;
+        }
         self::getModel('response')->info($msg);
     }
 }

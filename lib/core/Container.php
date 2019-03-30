@@ -13,7 +13,7 @@ namespace Core;
 class Container
 {
     /** @var array 实例生成的方式 */
-    private $bind = [];
+    private static $bind = [];
 
     private $single = [];
 
@@ -26,10 +26,10 @@ class Container
      */
     public function bind($class_name, $instance_method, $single = true)
     {
-        if (isset($this->bind[$class_name])) {
+        if (isset(self::$bind[$class_name])) {
             return true;
         }
-        $this->bind[$class_name] = $instance_method;
+        self::$bind[$class_name] = $instance_method;
         $this->single[$class_name] = $single;
         return true;
     }
@@ -41,7 +41,7 @@ class Container
      */
     public function bindWithArray(array $binds)
     {
-        $this->bind = $binds;
+        self::$bind = array_merge(self::$bind, $binds);
     }
 
     /**
@@ -51,12 +51,6 @@ class Container
      */
     public function make($class)
     {
-        if (!class_exists($class)) {
-            return null;
-        }
-        if (!in_array($class, array_keys($this->bind))) {
-            return null;
-        }
         $instance = $this->instance($class);
         return $instance;
     }
@@ -86,7 +80,12 @@ class Container
         }
         $data = [];
         foreach ($params as $param) {
-            $data[] = $param->getClass()->getName();
+            $param_class = $param->getClass();
+            if (!empty($param_class)) {
+                $data[] = $param->getClass()->getName();
+            } else {
+                throw new JdiException('can not instance with standard variable');
+            }
         }
         return $data;
     }
@@ -107,7 +106,7 @@ class Container
      */
 	private function instance($class)
 	{
-		$method = $this->bind[$class]; //实例化对象的方法
+		$method = isset(self::$bind[$class]) ? self::$bind[$class] : $class; //实例化对象的方法
 		$single = isset($this->single[$class]) ? $this->single[$class] : true; //是否单实例
         //单实例则返回已经实例化的对象
 		if ($single &&

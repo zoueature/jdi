@@ -15,10 +15,12 @@ use Core\Cache;
 use Core\Container;
 use Core\Dispatcher;
 use Core\Memcache;
+use Core\Model;
 use Core\Redis;
 use Core\Router;
+use Curl\Curl;
 
-class Register
+class ServiceRegister
 {
     private $container = null;
 
@@ -38,8 +40,29 @@ class Register
             Dispatcher::class => Dispatcher::class,
             Memcache::class => Memcache::class,
             Redis::class => Redis::class,
-            Router::class => Router::class
+            Router::class => Router::class,
+            'Utils\\IdGenerateModel' => function() {
+                return new Model('id_generate', ' ');
+            }
         ]);
+    }
+
+    /* --------------------------------------
+     * 绑定用户服务
+     * --------------------------------------
+     */
+    public function registerUserService()
+    {
+        $this->container->bindWithArray(
+            [
+                Curl::class => function() {
+                    return new Curl();
+                }
+            ],
+            [
+                Curl::class => true
+            ]
+        );
     }
 
 }
