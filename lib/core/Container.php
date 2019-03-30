@@ -39,9 +39,12 @@ class Container
      *  数组批量绑定
      * -------------------------------------------------------
      */
-    public function bindWithArray(array $binds)
+    public function bindWithArray(array $binds, array $singles = [])
     {
         self::$bind = array_merge(self::$bind, $binds);
+        if (!empty($singles)) {
+            $this->single = array_merge($this->single, $singles);
+        }
     }
 
     /**
