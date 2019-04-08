@@ -21,7 +21,7 @@ class Controller
         Logger::info($msg, $_REQUEST);
     }
 
-    public function jsonReturn(int $errno, string $msg, array $data)
+    public function jsonReturn($errno, $msg = '', array $data = [])
     {
         $data_arr = [
             'errno' => $errno,

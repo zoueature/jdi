@@ -41,8 +41,11 @@ class HttpRequest
      * 获取所有的请求参数
      * ----------------------------------------
      */
-    public function request($filter = 'addslashes')
+    public function request($key = '', $filter = 'addslashes')
     {
+        if (!empty($key)) {
+            return $this->getParam('REQUEST', $key);
+        }
         $all = $this->getParam('REQUEST', '', $filter);
         return $all;
     }

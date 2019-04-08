@@ -11,6 +11,10 @@ namespace Utils;
 
 class Util
 {
+    /* -----------------------------
+     * 检查email格式
+     * -----------------------------
+     */
     public static function checkEmail(string $string)
     {
         $regex = '/[a-zA-Z0-9_\.]+@[a-zA-Z0-9_\.]+\.[a-zA-Z0-9_\.]+/';
@@ -18,6 +22,10 @@ class Util
         return $is_email;
     }
 
+    /* -----------------------------
+     * 检查手机号
+     * -----------------------------
+     */
     public static function checkPhone(string $string)
     {
         $regex = '/^1[0-9]{10}$/';
@@ -25,11 +33,15 @@ class Util
         return $is_email;
     }
 
+    /* -----------------------------
+     * 获取毫秒时间戳
+     * -----------------------------
+     */
     public static function getMicroTimestamp()
     {
         $microtime = microtime();
         $arr = explode(' ', $microtime);
-        $microTimestamp = ($arr[1] * 1000) + intval($arr[0] * 1000);
-        return $microTimestamp;
+        $microTimestamp = ($arr[0] + $arr[1]) * 1000;
+        return intval($microTimestamp);
     }
 }

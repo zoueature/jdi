@@ -13,7 +13,7 @@ use Abs\NoSql;
 
 class Redis implements NoSql
 {
-    private $not_null =['host', 'port', 'auth'];
+    private $not_null =['host', 'port'];
     private $redis;
 
     public function __construct()
@@ -39,12 +39,12 @@ class Redis implements NoSql
         $this->redis->auth($config['auth']);
     }
 
-    public function get(string $key)
+    public function get($key)
     {
         return $this->redis->get($key);
     }
 
-    public function set(string $key, string $value)
+    public function set($key, $value)
     {
         return $this->redis->set($key, $value);
     }

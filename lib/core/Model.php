@@ -41,7 +41,7 @@ class Model
 
     protected $limit;
 
-    public function __construct(string $table = '', string $prefix = '')
+    public function __construct($table = '', $prefix = '')
     {
         if (empty($table)) {
             $this->table = ''; //类名

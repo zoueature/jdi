@@ -12,5 +12,5 @@ namespace Abs;
 
 interface Console
 {
-
+    public function run();
 }

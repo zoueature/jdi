@@ -39,10 +39,12 @@ class Container
      *  数组批量绑定
      * -------------------------------------------------------
      */
-    public function bindWithArray(array $binds, array $single = [])
+    public function bindWithArray(array $binds, array $singles = [])
     {
         self::$bind = array_merge(self::$bind, $binds);
-        $this->single = array_merge($this->single, $single);
+        if (!empty($singles)) {
+            $this->single = array_merge($this->single, $singles);
+        }
     }
 
     /**
@@ -135,11 +137,17 @@ class Container
 		//没有依赖则直接实例化
 		if (empty($dependence)) {
 		    $instance = new $method;
+		    if ($single) {
+		        $this->instance[$class] = $instance;
+            }
 		    return $instance;
         }
 		$params_instances = $this->solveDependence($dependence);
 		try {
             $instance = $reflection_class->newInstanceArgs($params_instances);
+            if ($single) {
+                $this->instance[$class] = $instance;
+            }
         } catch (\Exception $e) {
 		    return null;
         }
