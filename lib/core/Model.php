@@ -41,6 +41,10 @@ class Model
 
     protected $limit;
 
+    protected $offset;
+
+    protected $limit;
+
     public function __construct($table = '', $prefix = '')
     {
         if (empty($table)) {

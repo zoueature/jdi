@@ -11,10 +11,11 @@ namespace App\Controller;
 
 use Core\Cache;
 use Core\Container;
+use Core\Controller;
 use Core\Model;
 use Core\Redis;
 
-class TestController
+class TestController extends Controller
 {
     public function index($id)
     {
