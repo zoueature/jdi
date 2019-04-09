@@ -1,4 +1,11 @@
 {
+    "name": "Jdi",
+    "authors": [
+        {
+            "name": "zoueature",
+            "email": "zoueature@gmail.com"
+        }
+    ],
     "description": "jdi, just do it, is a simple framework by myself",
     "require": {
         "monolog/monolog": "^1.24",
