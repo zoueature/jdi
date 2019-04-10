@@ -166,7 +166,11 @@ class Model
         } else {
             return null;
         }
-        $this->where = $where;
+        if (!empty($this->where)) {
+            $this->where .= ' AND '.$where;
+        } else {
+            $this->where = $where;
+        }
         return $this;
     }
 
