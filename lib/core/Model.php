@@ -41,11 +41,7 @@ class Model
 
     protected $limit;
 
-    protected $offset;
-
-    protected $limit;
-
-    public function __construct($table = '', $prefix = '')
+    public function __construct(string $table = '', string $prefix = '')
     {
         if (empty($table)) {
             $this->table = ''; //类名
@@ -168,7 +164,7 @@ class Model
         } else if (is_string($condition)) {
             $where = $condition;
         } else {
-            return $this;
+            return null;
         }
         $this->where = $where;
         return $this;
@@ -192,6 +188,7 @@ class Model
     public function execSql($sql)
     {
         $effect_row = $this->instance->exec($sql);
+        $this->unsetCondition();
         return $effect_row;
     }
 
@@ -232,7 +229,21 @@ class Model
 
     public function update(array $update_data)
     {
+        $update_sql = 'UPDATE '.$this->table.' SET ';
+        $update_arr = [];
+        foreach ($update_data as $column => $value) {
+            $update_arr[] = "{$column} = $value";
+        }
+        $update_sql .= implode(',', $update_arr).$this->where;
+        $res = $this->execSql($update_sql);
+        return $res;
+    }
 
+    public function delete()
+    {
+        $delete_sql = 'DELETE FROM '.$this->table.$this->where;
+        $res = $this->execSql($delete_sql);
+        return $res;
     }
 
     /* ------------------------------------------------------
@@ -241,7 +252,7 @@ class Model
      */
     public function get($primary_value)
     {
-        $this->instance->where([$this->primary => $primary_value])->find();
+        return $this->instance->where([$this->primary => $primary_value])->find();
     }
 
     /* -----------------------------------------
