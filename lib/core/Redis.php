@@ -16,19 +16,19 @@ class Redis implements NoSql
     private $not_null =['host', 'port'];
     private $redis;
 
-    public function __construct()
+    public function __construct(string $db = 'master')
     {
         try {
-            $this->init();
+            $this->init($db);
         } catch (JdiException $e) {
             Logger::error($e->getMessage());
         }
     }
 
-    private function init()
+    private function init(string $db)
     {
-        $config = config('cache');
-        $config = $config['redis'];
+        $config = config('redis');
+        $config = $config[$db];
         foreach ($this->not_null as $key) {
             if (empty($config[$key])) {
                 throw new JdiException('Redis config error '. $key);
@@ -36,7 +36,9 @@ class Redis implements NoSql
         }
         $this->redis = new \Redis();
         $this->redis->connect($config['host'], $config['port']);
-        $this->redis->auth($config['auth']);
+        if (!empty($config['auth'])) {
+            $this->redis->auth($config['auth']);
+        }
     }
 
     public function get($key)

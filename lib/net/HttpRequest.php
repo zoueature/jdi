@@ -76,4 +76,19 @@ class HttpRequest
         }
         return $value;
     }
+
+    public function getServer(string $key, $default)
+    {
+
+    }
+
+    public function getHost()
+    {
+
+    }
+
+    public function getRemoteIp()
+    {
+
+    }
 }

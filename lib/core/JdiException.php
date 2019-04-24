@@ -11,5 +11,5 @@ namespace Core;
 
 class JdiException extends \Exception
 {
-
+    const ERROR_EMPTY = 1001;
 }
