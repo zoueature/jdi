@@ -6,10 +6,10 @@
  * Time: 上午10:11
  */
 
-namespace Core;
+namespace Core\Db;
 
 
-use Abs\NoSql;
+use Core\Abs\NoSql;
 
 class Redis implements NoSql
 {

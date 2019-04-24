@@ -10,13 +10,8 @@ error_reporting(E_ALL);
 require '../vendor/autoload.php';
 
 define('ROOT', dirname(dirname(__FILE__)));
-$config = require '../config/env.php';
-$app = new \App\Boot\App($config);
-$application_config = [
-    'log' => ROOT.'/logs/',
-    'application' => 'eature'
-];
-config($application_config);
+$config = require_once '../config/env.php';
+$app = new \Core\Boot\App($config);
 try {
     $app->run();
 } catch (Exception $e) {

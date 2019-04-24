@@ -7,7 +7,7 @@
  * 队列相关接口
  */
 
-namespace Abs;
+namespace Core\Abs;
 
 
 interface QueueI

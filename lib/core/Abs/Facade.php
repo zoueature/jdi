@@ -7,10 +7,10 @@
  | ------------------------------
  */
 
-namespace Core;
+namespace Core\Abs;
 
 
-class Facade
+abstract class Facade
 {
     protected static $instance;
 
@@ -29,8 +29,5 @@ class Facade
         return self::$instance;
     }
 
-    public static function getFactClassName()
-    {
-        return get_class();
-    }
+    public abstract static function getFactClassName();
 }

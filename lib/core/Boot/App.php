@@ -6,7 +6,7 @@
  * Time: 上午8:39
  */
 
-namespace App\Boot;
+namespace Core\Boot;
 
 use Core\Container;
 use Core\Router;

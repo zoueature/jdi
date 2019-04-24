@@ -7,7 +7,7 @@
  | ------------------------------
  */
 
-namespace Core;
+namespace Core\Db;
 
 
 use Doctrine\DBAL\Configuration;

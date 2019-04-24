@@ -13,14 +13,6 @@ use Monolog\Handler\StreamHandler;
 
 class Logger
 {
-    private static $info_instance;
-    private static $waring_instance;
-    private static $error_instance;
-    private static $sql_instance;
-    private static $sql_error_instance;
-    private static $access_instance;
-    private static $response_instance;
-
     private function __construct()
     {
     }
@@ -31,7 +23,8 @@ class Logger
 
         if (empty(self::$$instance)) {
             $log_name = config('application') ?: 'logger';
-            $log_path = config('log');
+            $configs = config('los');
+            $log_path = $configs['path'] ?: __DIR__.'/../../logs/';
             $logger_stream = $log_path.$log_name."/$type/".date('Y-m-d');
             $log = new MonLogger($log_name);
             $handle = new StreamHandler($logger_stream);
@@ -39,6 +32,16 @@ class Logger
             self::$$instance = $log;
         }
         return self::$$instance;
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        $switch = config('log');
+        if (!$switch[$name]) {
+            return true;
+        }
+        $instance = self::getModel($name);
+        return call_user_func_array([$instance, $name], $arguments);
     }
 
     public static function error(String $msg, $context = [])

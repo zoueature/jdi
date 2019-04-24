@@ -9,50 +9,28 @@
 namespace Core;
 
 
-use Abs\NoSql;
+use Core\Abs\NoSql;
+use Core\Abs\Facade;
 
-class Cache
+class Cache extends Facade
 {
-	const CACHE_LIST = [
-		'Memcache',
-		'Redis'
-	];
+    private static $driver;
+    private static $driverMap = [
+        'redis' => Redis::class,
+        'memcache' => Memcache::class
+    ];
 
-	private static $cache_model;
-	private static $cache;
-
-	public function __construct(Redis $cache)
+	public function __construct()
 	{
-		self::$cache = $cache;
+		$driver = config('driver');
+		$cacheDriver = $driver['cache'] ?: 'redis';
+		self::$driver = $cacheDriver;
 	}
 
-	private static function getModel()
-	{
-		$cache = config('cache');
-		$instance = new $cache();
-		if (empty($cache)) {
-			self::$cache = new Cache($instance);
-		}
-		return self::$cache;
-	}	
-
-	public static function get($key)
-	{
-		$value = static::$cache_model->get($key);
-		if (empty($value)) {
-			return false;
-		}
-		return $value;
-	}
-
-	public static function set($key, $value, $expire)
-	{
-		$result = static::$cache_model->set($key, $value, $expire);
-		if (empty($result)) {
-			return false;
-		}
-		return true;
-	}
+	public static function getFactClassName()
+    {
+        return self::$driverMap[self::$driver];
+    }
 }
 
 
