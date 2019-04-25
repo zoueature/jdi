@@ -14,9 +14,9 @@ function config($key, $value = '')
 {
     if (empty($value) && !is_array($key)) {
         //获取配置$key的值
-        return \App\Boot\App::getConfig($key);
+        return \Core\Boot\App::getConfig($key);
     }
-    return \App\Boot\App::setConfig($key, $value);
+    return \Core\Boot\App::setConfig($key, $value);
 }
 
 /* ----------------------------------
@@ -25,7 +25,7 @@ function config($key, $value = '')
  */
 function make($class)
 {
-    $container = \App\Boot\App::getContainer();
+    $container = \Core\Boot\App::getContainer();
     $instance = $container->make($class);
     return $instance;
 }
@@ -36,6 +36,6 @@ function make($class)
  */
 function bind($name, $method)
 {
-    $container = \App\Boot\App::getContainer();
+    $container = \Core\Boot\App::getContainer();
     return $container->bind($name, $method);
 }

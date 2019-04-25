@@ -13,6 +13,9 @@ use Monolog\Handler\StreamHandler;
 
 class Logger
 {
+    private static $sql_instance;
+    private static $info_instance;
+
     private function __construct()
     {
     }

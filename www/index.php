@@ -10,8 +10,7 @@ error_reporting(E_ALL);
 require '../vendor/autoload.php';
 
 define('ROOT', dirname(dirname(__FILE__)));
-$config = require_once '../config/env.php';
-$app = new \Core\Boot\App($config);
+$app = new \Core\Boot\App();
 try {
     $app->run();
 } catch (Exception $e) {

@@ -9,29 +9,19 @@
 namespace App\Controller;
 
 
-use Core\Cache;
-use Core\Container;
+use Core\Db\Model;
+use Core\Db\Memcache;
+use Core\Db\Redis;
 use Core\Controller;
-use Core\Model;
-use Core\Redis;
+
 
 class TestController extends Controller
 {
-    public function index($id)
+    public function test()
     {
-        echo $id;
-    }
-    public function test(Redis $redis, $o = 11)
-    {
-        $model = new Model('user', 'jingyu');
-        $res = $model->select();
+        $model = new Model('jingyu_user');
+        $res = $model->getByPrimary(1);
         var_dump($res);die;
-        $container = new Container();
-        $container->bind(Redis::class, Redis::class);
-        $container->bind(Cache::class, Cache::class);
-        $cache = $container->make(Cache::class);
-        var_dump($cache);
-        var_dump($redis);
     }
 }
 
