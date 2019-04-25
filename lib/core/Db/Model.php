@@ -10,6 +10,7 @@
 namespace Core\Db;
 
 
+use Core\Logger;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 
