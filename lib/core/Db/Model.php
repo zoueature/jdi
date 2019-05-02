@@ -12,6 +12,7 @@ namespace Core\Db;
 
 use Core\Common\Logger;
 use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\Driver\PDOStatement;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
 
@@ -102,7 +103,10 @@ class Model
             $this->queryResult = $res;
             if (in_array($name, ['execute'])) {
                 $this->queryResult = null;
-                return $res->fetchAll();
+                if ($res instanceof PDOStatement) {
+                    return $res->fetchAll();
+                }
+                return $res;
             }
         }
         return $this;
