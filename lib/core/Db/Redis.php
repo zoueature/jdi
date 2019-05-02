@@ -41,12 +41,12 @@ class Redis implements NoSql
         }
     }
 
-    public function get($key)
+    public function get(string $key)
     {
         return $this->redis->get($key);
     }
 
-    public function set($key, $value)
+    public function set(string $key, string $value)
     {
         return $this->redis->set($key, $value);
     }

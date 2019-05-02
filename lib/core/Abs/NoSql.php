@@ -10,7 +10,7 @@ namespace Core\Abs;
 
 interface NoSql
 {
-    public function get($key);
+    public function get(string $key);
 
-    public function set($key, $value);
+    public function set(string $key, string $value);
 }

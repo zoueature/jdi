@@ -13,12 +13,12 @@ use Core\Abs\NoSql;
 
 class Memcache implements NoSql
 {
-    public function get($key)
+    public function get(string $key)
     {
         // TODO: Implement get() method.
     }
 
-    public function set($key, $value)
+    public function set(string $key, string $value)
     {
         // TODO: Implement set() method.
     }

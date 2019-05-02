@@ -70,8 +70,8 @@ class HttpRequest
             }
             return $all;
         }
-        $value = $all[$key];
-        if (!empty($filter)) {
+        $value = $all[$key] ?? null;
+        if (!empty($filter) && $value !== null) {
             $value = $filter($value);
         }
         return $value;

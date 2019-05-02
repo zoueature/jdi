@@ -13,6 +13,7 @@ namespace Core\Db;
 use Core\Common\Logger;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 class Model
 {
@@ -47,9 +48,7 @@ class Model
         'values',
         'setValue',
         'set',
-        'having',
-        'having',
-        'having',
+        'execute',
     ];
 
     public function __construct(string $table = '', string $prefix = '', string $db = 'master')
@@ -70,7 +69,9 @@ class Model
             $prefix = $dbConfig['prefix'];
         }
         $this->prefix = $prefix;
-        $this->table = $table;
+        if (empty($this->table)) {
+            $this->table = $table;
+        }
     }
 
     protected function init(array $config)
@@ -91,15 +92,20 @@ class Model
     public function __call($name, $arguments)
     {
         if (in_array($name, $this->builderFunc)) {
-            $this->builder = $this->conn->createQueryBuilder();
-            $builder = $this->builder;
-            $microtime = microtime(true);
-            call_user_func_array([$builder, $name], $arguments);
-            $microtimeEnd = microtime(true);
-            $costTime = $microtimeEnd - $microtime;
-            Logger::sql('Cost: '.$costTime.' '.$builder->getSQL());
+            if (!empty($this->queryResult) && $this->queryResult instanceof QueryBuilder) {
+                $res = call_user_func_array([$this->queryResult, $name], $arguments);
+            } else {
+                $this->builder = $this->conn->createQueryBuilder();
+                $builder = $this->builder;
+                $res = call_user_func_array([$builder, $name], $arguments);
+            }
+            $this->queryResult = $res;
+            if (in_array($name, ['execute'])) {
+                $this->queryResult = null;
+                return $res->fetchAll();
+            }
         }
-        call_user_func_array([$this, $name], $arguments);
+        return $this;
     }
 
 
