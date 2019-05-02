@@ -6,10 +6,10 @@
  * Time: 下午12:43
  */
 
-namespace Core;
+namespace Core\Common;
 
 
-use Abs\QueueI;
+use Core\Abs\QueueI;
 
 class Queue implements QueueI
 {
@@ -22,7 +22,7 @@ class Queue implements QueueI
 
     public function init(string $driver)
     {
-        $drivers = config('drivers');
+        $drivers = config('driver');
         if (!empty($drivers['queue'])) {
             $driver = $drivers['queue'];
         }

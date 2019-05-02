@@ -86,14 +86,12 @@ class Container
             $param_class = $param->getClass();
             if (!empty($param_class)) {
                 $data[] = $param->getClass()->getName();
-            } else {
-                throw new JdiException('can not instance with standard variable');
             }
         }
         return $data;
     }
 
-	private function solveDependence($dependence)
+	private function solveDependence(array $dependence)
 	{
 	    $instances = [];
 	    foreach ($dependence as $item) {

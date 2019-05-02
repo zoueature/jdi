@@ -8,17 +8,12 @@
  * 注册类，提供相关服务的注册方法
  */
 
-namespace App\Boot;
+namespace Core\Boot;
 
 
-use Core\Cache;
 use Core\Container;
-use Core\Dispatcher;
-use Core\Memcache;
-use Core\Model;
-use Core\Redis;
-use Core\Router;
-use Curl\Curl;
+use Core\Db\Model;
+use App\Service\ServiceRegister as UserServiceRegister;
 
 class ServiceRegister
 {
@@ -36,13 +31,8 @@ class ServiceRegister
     public function registerCoreService()
     {
         $this->container->bindWithArray([
-            Cache::class => Cache::class,
-            Dispatcher::class => Dispatcher::class,
-            Memcache::class => Memcache::class,
-            Redis::class => Redis::class,
-            Router::class => Router::class,
             'Utils\\IdGenerateModel' => function() {
-                return new Model('id_generate', ' ');
+                return new Model('id_generate');
             }
         ]);
     }
@@ -53,16 +43,9 @@ class ServiceRegister
      */
     public function registerUserService()
     {
-        $this->container->bindWithArray(
-            [
-                Curl::class => function() {
-                    return new Curl();
-                }
-            ],
-            [
-                Curl::class => true
-            ]
-        );
+        $userService = UserServiceRegister::register();
+        $userSingle = UserServiceRegister::single();
+        $this->container->bindWithArray($userService, $userSingle);
     }
 
 }

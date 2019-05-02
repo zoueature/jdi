@@ -8,6 +8,7 @@
 
 return [
     "domain" => '',
+    'application' => 'jdi',
     "db" => [
         'master' => [
             'host' => '127.0.0.1',
@@ -15,7 +16,9 @@ return [
             'user' => '',
             'pswd' => '',
             'name' => '',
-            'charset' => 'utf-8'
+            'prefix' => 't_',
+            'charset' => 'utf-8',
+            'driver' => 'pdo_mysql' //pdo_mysql, pdo_sqlite, pdo_pgsql, pdo_oci, oci8, ibm_db2, pdo_sqlsrv, mysqli, drizzle_pdo_mysql, sqlanywhere, sqlsrv
         ]
     ],
     'cache' => [
@@ -43,9 +46,12 @@ return [
         ]
     ],
     'log' => [
-        'access' => true,
-        'response' => false,
-        'sql' => true
+        'path'=> '',
+        'switch' => [
+            'access' => true,
+            'response' => false,
+            'sql' => true
+        ]
     ],
     'driver' => [
         'queue' => '', //备选redis， beanstalk，

@@ -8,4 +8,4 @@
 
 use Core\Router;
 
-Router::get('/api/test', 'TestController@test', 'App\\Controller');
+Router::get('/', 'TestController@test', 'App\\Controller');

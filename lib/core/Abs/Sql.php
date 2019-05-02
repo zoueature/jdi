@@ -6,7 +6,7 @@
  * Time: 下午11:04
  */
 
-namespace Abs;
+namespace Core\Abs;
 
 
 interface Sql

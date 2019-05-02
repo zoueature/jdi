@@ -7,9 +7,10 @@
  | ------------------------------
  */
 
-namespace Core;
+namespace Core\Db;
 
 
+use Core\Common\Logger;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 
@@ -21,6 +22,7 @@ class Model
     protected $primary = 'id';
     protected $table;
     protected $builder;
+    protected $prefix;
     protected $builderFunc = [
         'select',
         'from',
@@ -50,7 +52,7 @@ class Model
         'having',
     ];
 
-    public function __construct(string $table = '', string $db = 'master')
+    public function __construct(string $table = '', string $prefix = '', string $db = 'master')
     {
         $config = config('db');
         $dbConfig = $config[$db];
@@ -59,27 +61,37 @@ class Model
         }
         $this->init($dbConfig);
         $logSwitch = config('log');
-        $sqlLogSwitch = $logSwitch['sql'] ?: true;
+        $sqlLogSwitch = $logSwitch['sql'] ?? true;
         $this->logSwitch = $sqlLogSwitch;
         if (empty($table)) {
             $table = get_class();
         }
+        if (empty($prefix)) {
+            $prefix = $dbConfig['prefix'];
+        }
+        $this->prefix = $prefix;
         $this->table = $table;
     }
 
     protected function init(array $config)
     {
         $configuration = make(Configuration::class);
-        $conn = DriverManager::getConnection($config, $configuration);
+        $connectionParams = array(
+            'dbname' => $config['name'],
+            'user' => $config['user'],
+            'password' => $config['pswd'],
+            'host' => $config['host'],
+            'driver' => $config['driver'] ?? 'pdo_mysql',
+        );
+        $conn = DriverManager::getConnection($connectionParams, $configuration);
         $this->conn = $conn;
+        $this->builder = $this->conn->createQueryBuilder();
     }
 
     public function __call($name, $arguments)
     {
         if (in_array($name, $this->builderFunc)) {
-            if (empty($this->builder)) {
-                $this->builder = $this->conn->createQueryBuilder();
-            }
+            $this->builder = $this->conn->createQueryBuilder();
             $builder = $this->builder;
             $microtime = microtime(true);
             call_user_func_array([$builder, $name], $arguments);
@@ -93,11 +105,15 @@ class Model
 
     public function getByPrimary($value)
     {
-        $stm = $this->builder->select('*')
-            ->from($this->table)
-            ->where($this->primary.' = ?')
-            ->setParameter(0, $value);
+        $stm = $this->conn
+            ->createQueryBuilder()
+            ->select('*')
+            ->from($this->prefix.$this->table)
+            ->where($this->primary.' = :primary')
+            ->setParameter(':primary', $value)
+            ->setMaxResults(1)
+            ->execute();
         $result = $stm->fetchAll();
-        return $result;
+        return $result[0];
     }
 }

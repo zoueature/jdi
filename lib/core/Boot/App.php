@@ -6,9 +6,10 @@
  * Time: 上午8:39
  */
 
-namespace App\Boot;
+namespace Core\Boot;
 
 use Core\Container;
+use Core\JdiException;
 use Core\Router;
 
 class App
@@ -19,10 +20,13 @@ class App
 
     public static $root;
 
-    public function __construct(Array $config)
+    public function __construct()
     {
-        self::$config = $config;
-        self::$root = dirname(dirname(dirname(__FILE__)));
+        self::$root = dirname(dirname(dirname(dirname(__FILE__))));
+        if (!file_exists(self::$root.'/config/env.php')) {
+            throw new JdiException('No config file'. self::$root.'/config/env.php', JdiException::ERROR_EMPTY);
+        }
+        self::$config = require_once self::$root.'/config/env.php';
     }
 
     public function run()
