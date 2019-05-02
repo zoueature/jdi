@@ -23,5 +23,7 @@
             "route/api.php",
             "lib/utils/functions.php"
         ]
+    },
+    "scripts": {
     }
 }

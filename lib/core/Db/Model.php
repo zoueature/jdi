@@ -10,7 +10,7 @@
 namespace Core\Db;
 
 
-use Core\Logger;
+use Core\Common\Logger;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 
@@ -22,6 +22,7 @@ class Model
     protected $primary = 'id';
     protected $table;
     protected $builder;
+    protected $prefix;
     protected $builderFunc = [
         'select',
         'from',
@@ -51,7 +52,7 @@ class Model
         'having',
     ];
 
-    public function __construct(string $table = '', string $db = 'master')
+    public function __construct(string $table = '', string $prefix = '', string $db = 'master')
     {
         $config = config('db');
         $dbConfig = $config[$db];
@@ -65,6 +66,10 @@ class Model
         if (empty($table)) {
             $table = get_class();
         }
+        if (empty($prefix)) {
+            $prefix = $dbConfig['prefix'];
+        }
+        $this->prefix = $prefix;
         $this->table = $table;
     }
 
@@ -103,7 +108,7 @@ class Model
         $stm = $this->conn
             ->createQueryBuilder()
             ->select('*')
-            ->from($this->table)
+            ->from($this->prefix.$this->table)
             ->where($this->primary.' = :primary')
             ->setParameter(':primary', $value)
             ->setMaxResults(1)

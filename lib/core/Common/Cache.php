@@ -6,7 +6,7 @@
  * Time: 上午10:11
  */
 
-namespace Core;
+namespace Core\Common;
 
 
 use Core\Abs\NoSql;

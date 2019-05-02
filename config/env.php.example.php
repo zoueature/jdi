@@ -16,6 +16,7 @@ return [
             'user' => '',
             'pswd' => '',
             'name' => '',
+            'prefix' => 't_',
             'charset' => 'utf-8',
             'driver' => 'pdo_mysql' //pdo_mysql, pdo_sqlite, pdo_pgsql, pdo_oci, oci8, ibm_db2, pdo_sqlsrv, mysqli, drizzle_pdo_mysql, sqlanywhere, sqlsrv
         ]

@@ -6,7 +6,7 @@
  * Time: 下午12:43
  */
 
-namespace Core;
+namespace Core\Common;
 
 
 use Core\Abs\QueueI;

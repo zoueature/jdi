@@ -19,7 +19,7 @@ class TestController extends Controller
 {
     public function test()
     {
-        $model = new Model('jingyu_user');
+        $model = new Model('book', 't_');
         $res = $model->getByPrimary(1);
         var_dump($res);die;
     }

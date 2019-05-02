@@ -8,6 +8,8 @@
 
 namespace Core;
 
+use Core\Common\Logger;
+
 class Controller
 {
     public function __construct()
