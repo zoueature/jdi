@@ -27,7 +27,7 @@ class Cache extends Facade
 		self::$driver = $cacheDriver;
 	}
 
-	public static function getFactClassName()
+	protected static function getFactClassName()
     {
         return self::$driverMap[self::$driver];
     }

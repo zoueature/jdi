@@ -20,7 +20,7 @@ abstract class Facade
         call_user_func_array([$instance, $name], $arguments);
     }
 
-    public static function getInstance()
+    private static function getInstance()
     {
         if (empty($instance)) {
             $instance = new (static ::getFactClassName());
@@ -29,5 +29,5 @@ abstract class Facade
         return self::$instance;
     }
 
-    public abstract static function getFactClassName();
+    protected abstract static function getFactClassName();
 }
