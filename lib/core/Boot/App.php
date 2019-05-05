@@ -27,6 +27,7 @@ class App
             throw new JdiException('No config file'. self::$root.'/config/env.php', JdiException::ERROR_EMPTY);
         }
         self::$config = require_once self::$root.'/config/env.php';
+        putenv(self::$root.'/.env');
     }
 
     public function run()

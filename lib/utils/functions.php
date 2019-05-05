@@ -39,3 +39,27 @@ function bind($name, $method)
     $container = \Core\Boot\App::getContainer();
     return $container->bind($name, $method);
 }
+
+/* ----------------------------------
+ * 获取配置
+ * ----------------------------------
+ */
+function env(string $key, $default = null)
+{
+    $value = getenv($key);
+    switch (strtolower($value)) {
+        case 'true':
+        case '(true)':
+            return true;
+        case 'false':
+        case '(false)':
+            return false;
+        case 'empty':
+        case '(empty)':
+            return '';
+        case 'null':
+        case '(null)':
+            return null;
+    }
+    return $value;
+}

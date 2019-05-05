@@ -38,6 +38,7 @@ class Dispatcher
 
     public static function deal($controller, $action, $params, Container $container)
     {
+        //todo 中间件处理
         $controller_relection = new \ReflectionClass($controller);
         $container->bind($controller, $controller);
         $controller_instance = $container->make($controller);

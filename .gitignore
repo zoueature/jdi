@@ -3,3 +3,4 @@ vendor
 composer.lock
 logs
 config/env.php
+.env
