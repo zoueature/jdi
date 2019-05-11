@@ -21,6 +21,7 @@ class Router
     private static $route;
     private static $dispatcher;
     private static $namesapce = [];
+    private static $middleware = [];
 
     public static function init()
     {
@@ -58,7 +59,8 @@ class Router
                 //根据匹配到的路由，解析到相应的控制器
                 try {
                     $namespace = isset(self::$namesapce[$uri]) ? self::$namesapce[$uri]: '';
-                    CPatcher::patcher($handler, $vars, $namespace, $container);
+                    $middleware = isset(self::$middleware[$uri]) ? self::$middleware[$uri]: '';
+                    CPatcher::patcher($handler, $vars, $namespace, $container, $middleware);
                 } catch (\Exception $e) {
                     echo $e->getMessage();
                 }
@@ -66,30 +68,35 @@ class Router
         }
     }
 
-    public static function get($uri, $handle, $namespace = '')
+    public static function get($uri, $handle, $namespace = '', $middleware = '')
     {
         self::init();
         if (!empty($namespace)) {
             self::$namesapce[$uri] = $namespace;
         }
+        self::$middleware[$uri] = $middleware;
         return self::$route->addRoute('GET', $uri, $handle);
     }
 
-    public static function post($uri, $handle, $namespace)
+    public static function post($uri, $handle, $namespace = '', $middleware = '')
     {
         self::init();
         if (!empty($namespace)) {
             self::$namesapce[$uri] = $namespace;
         }
+        self::$middleware[$uri] = $middleware;
         return self::$route->addRoute('GET', $uri, $handle);
     }
 
-    public static function group($prefix, Array $route = [])
+    public static function group($prefix, Array $route = [], $middleware = '')
     {
         self::init();
-        self::$route->addGroup($prefix, function (RouteCollector $r) use ($route){
+        self::$route->addGroup($prefix, function (RouteCollector $r) use ($route, $middleware, $prefix){
             foreach ($route as $key => $value) {
                 $r->addRoute('GET', $key, $value);
+                if (!empty($middleware)) {
+                    self::$middleware[$prefix.$key] = $middleware;
+                }
             }
         });
     }

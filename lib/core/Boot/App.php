@@ -27,8 +27,27 @@ class App
             throw new JdiException('No config file'. self::$root.'/config/env.php', JdiException::ERROR_EMPTY);
         }
         self::$config = require_once self::$root.'/config/env.php';
-        putenv(self::$root.'/.env');
+        $this->parseAndConfigEnv();
     }
+
+    private function parseAndConfigEnv()
+    {
+        if (!file_exists(self::$root.'/.env')) {
+            return;
+        }
+        $content = file_get_contents(self::$root.'/.env');
+        if (empty($content)) {
+            return;
+        }
+        $configTmp = explode(PHP_EOL, $content);
+        foreach ($configTmp as $env) {
+            putenv($env);
+            list($key, $value) = explode('=', $env);
+            self::$config[$key] = $value;
+        }
+        return;
+    }
+
 
     public function run()
     {

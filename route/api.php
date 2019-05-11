@@ -8,4 +8,4 @@
 
 use Core\Router;
 
-Router::get('/', 'TestController@test', 'App\\Controller');
+Router::get('/', 'TestController@test', 'App\\Controller', \App\Middleware\TestMiddleware::class);

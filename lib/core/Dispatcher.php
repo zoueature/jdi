@@ -9,6 +9,8 @@
 namespace Core;
 
 
+use Core\Abs\Middleware;
+
 class Dispatcher
 {
     private static $namespace = 'App\\Controller';
@@ -17,12 +19,20 @@ class Dispatcher
     ];
 
 
-    public static function patcher($handle, $params, $namespace, $container)
+    public static function patcher($handle, $params, $namespace, $container, $middleware)
     {
+        if (!empty($middleware)) {
+            $middleware  = self::checkAndMakeMiddleware($middleware);
+            if (empty($middleware)) {
+                throw new JdiException("Middleware Illegal");
+            }
+            self::doRequestBefore($middleware);
+        }
         if ($handle instanceof \Closure) {
             //handle is closure, do this function
             $handle();
-            exit();
+            self::doRequestAfter($middleware);
+            return;
         }
         $arr = explode('@', $handle);
         if (empty($arr)) {
@@ -34,11 +44,30 @@ class Dispatcher
         $controller = $namespace.'\\'.$arr[0];
         $action = $arr[1];
         self::deal($controller, $action, $params, $container);
+        self::doRequestAfter($middleware);
+    }
+
+    public static function checkAndMakeMiddleware(string $middlewareClass) :Middleware
+    {
+        if (!class_exists($middlewareClass)) {
+            return null;
+        }
+        $middleware = make($middlewareClass);
+        return $middleware;
+    }
+
+    public static function doRequestBefore(Middleware $middleware)
+    {
+        $middleware->before();
+    }
+
+    public static function doRequestAfter(Middleware $middleware)
+    {
+        $middleware->after();
     }
 
     public static function deal($controller, $action, $params, Container $container)
     {
-        //todo 中间件处理
         $controller_relection = new \ReflectionClass($controller);
         $container->bind($controller, $controller);
         $controller_instance = $container->make($controller);
