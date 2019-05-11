@@ -1,5 +1,5 @@
 # jdi
-just a simple framework
+Just a simple PHP framework
 
 1. 安装依赖 ```composer install```
 2. 编写相关路由， `/path/to/jdi/route/api.php`

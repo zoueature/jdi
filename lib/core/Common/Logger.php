@@ -26,8 +26,8 @@ class Logger
 
         if (empty(self::$$instance)) {
             $log_name = config('application') ?: 'logger';
-            $configs = config('los');
-            $log_path = $configs['path'] ?: __DIR__ . '/../../logs/';
+            $configs = config('log');
+            $log_path = $configs['path'] ?: dirname(dirname(__FILE__)) . '/../../logs/';
             $logger_stream = $log_path.$log_name."/$type/".date('Y-m-d');
             $log = new MonLogger($log_name);
             $handle = new StreamHandler($logger_stream);
